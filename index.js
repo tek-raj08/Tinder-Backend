@@ -53,6 +53,17 @@ app.get("/feed", async(req, res) => {
     }
 })
 
+app.delete("/users", async(req, res) => {
+    const userId = req.body.userId
+    try{
+        const users = await User.findByIdAndDelete(userId)
+        res.status(200).json({message: "User deleted successfully.", users})
+
+    }catch(err){
+        res.status(500).json({ERROR: "Failed to delete user."})
+    }
+})
+
 app.get("/", (req, res) => {
 
     res.json("Hello Server!")
