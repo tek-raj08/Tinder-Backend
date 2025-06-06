@@ -12,7 +12,7 @@ const corsOptions = {
 
 const app = express()
 
-app.use(express.json())
+app.use(express.json()) // middle aware read json data
 app.use(cors(corsOptions))
 
 
@@ -33,6 +33,23 @@ app.post("/signup", async (req, res) => {
 
     } catch (err) {
         res.status(500).json({ ERROR: err.message })
+    }
+})
+
+app.get("/feed", async(req, res) => {
+
+    try{
+        
+        const allUser = await User.find()
+        if(allUser.length === 0){
+            res.status(404).json({message: "Users not found"})
+        }else{
+
+            res.status(201).json({message: "All user retrieve successfully.", users: allUser})
+        }
+
+    }catch(err){
+        res.status(500).json({ERROR: err.message})
     }
 })
 
