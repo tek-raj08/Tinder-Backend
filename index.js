@@ -16,6 +16,12 @@ const app = express()
 app.use(express.json())
 app.use(cors(corsOptions))
 
+app.get("/user/:id/:name/:gender", (req, res) =>{
+    // console.log(req.query)
+    console.log(req.params)
+    res.send({firstName: "Tek", lastName: "Rana"})
+})
+
 app.get("/", (req, res) => {
 
     res.json("Hello Server!")
