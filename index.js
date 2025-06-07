@@ -2,10 +2,15 @@ const { initializeData } = require("./db/db.connect")
 const validator = require('validator');
 const { signUpValidation } = require("./utils/validationSignUp")
 const bcrypt = require("bcryptjs");
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
+const {userAuth} = require("./middlewares/auth")
 
 const express = require("express")
 const cors = require("cors")
-const User = require("./models/user")
+const User = require("./models/user");
+const { authRouter } = require("./Routes/auth");
 
 const corsOptions = {
     origin: "*",
@@ -15,61 +20,20 @@ const corsOptions = {
 
 const app = express()
 
+const SECRET_KEY = process.env.SECRET_KEY
+
 app.use(express.json()) // middle aware read json data
 app.use(cors(corsOptions))
+app.use(cookieParser())
 
+const authRouter  = require("./Routes/auth")
+const profileRouter  = require("./Routes/profile")
+const requestRouter  = require("./Routes/request")
 
-app.post("/signup", async (req, res) => {
+app.use("/", authRouter)
+app.use("/", profileRouter)
+app.use("/", requestRouter)
 
-
-    try {
-        const { firstName, lastName, emailID, password } = req.body
-
-        signUpValidation(req)
-
-        const passwordHash = await bcrypt.hash(password, 10)
-        // console.log(passwordHash)
-        // create a new instance of user model
-        const user = new User({ firstName, lastName, emailID, password: passwordHash })
-
-
-
-        const saveUser = await user.save()
-
-        return res.status(200).json({ message: "User added successfully.", users: saveUser })
-
-    } catch (err) {
-        console.error(err)
-        return res.status(500).json({ ERROR: err.message })
-    }
-})
-
-app.post("/login", async (req, res) => {
-
-    const { emailID, password } = req.body
-    try {
-        const user = await User.findOne({ emailID })
-        // console.log(user)
-        if (!user) {
-            return res.status(404).json({ message: "Invalid Credentials." })
-        }
-
-        const isPasswordValid = bcrypt.compare(password, user?.password)
-
-
-        if (isPasswordValid) {
-            return res.status(201).json({ message: "Login successfull." })
-        } else {
-            return res.status(404).json({ message: "Invalid Credentials." })
-
-        }
-
-
-    } catch (err) {
-        console.error(err)
-        return res.status(500).json({ ERROR: "User failed to Login." })
-    }
-})
 
 app.get("/feed", async (req, res) => {
 
