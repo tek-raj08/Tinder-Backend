@@ -10,7 +10,7 @@ const {userAuth} = require("./middlewares/auth")
 const express = require("express")
 const cors = require("cors")
 const User = require("./models/user");
-const { authRouter } = require("./Routes/auth");
+
 
 const corsOptions = {
     origin: "*",
@@ -26,9 +26,9 @@ app.use(express.json()) // middle aware read json data
 app.use(cors(corsOptions))
 app.use(cookieParser())
 
-const authRouter  = require("./Routes/auth")
-const profileRouter  = require("./Routes/profile")
-const requestRouter  = require("./Routes/request")
+const {authRouter}  = require("./Routes/auth")
+const {profileRouter}  = require("./Routes/profile")
+const {requestRouter}  = require("./Routes/request")
 
 app.use("/", authRouter)
 app.use("/", profileRouter)

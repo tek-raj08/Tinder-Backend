@@ -31,7 +31,7 @@ authRouter.post("/signup", async (req, res) => {
 })
 
 
-app.post("/login", async (req, res) => {
+authRouter.post("/login", async (req, res) => {
 
     const { emailID, password } = req.body
     try {

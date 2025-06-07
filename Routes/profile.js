@@ -15,4 +15,5 @@ profileRouter.get("/profile", userAuth, async(req, res) => {
         return res.status(500).json({ERROR: "Failed to get profile."})
     }
 })
-moudule.express = {profileRouter}
+
+module.exports = {profileRouter}
