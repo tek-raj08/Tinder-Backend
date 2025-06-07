@@ -67,9 +67,9 @@ app.delete("/users", async(req, res) => {
 app.post("/users", async(req, res) => {
 
     const userId = req.body.userId
-    const updatedData = req.body
+    const {firstName, lastName, emailID, password, skills, age, gender, photoUrl, about} = req.body
     try{
-        const updateUser = await User.findByIdAndUpdate(userId, updatedData)
+        const updateUser = await User.findByIdAndUpdate(userId, {firstName, lastName, emailID, password, skills, age, gender, photoUrl, about}, {returnDocument: "after"})
         res.status(201).json({message: "User updated successfully.", users: updateUser})
 
     }catch(err){
