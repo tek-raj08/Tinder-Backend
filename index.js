@@ -1,5 +1,7 @@
 const { initializeData } = require("./db/db.connect")
 const validator = require('validator');
+const {signUpValidation} = require("./utils/validationSignUp")
+const  bcrypt = require("bcryptjs");
 
 const express = require("express")
 const cors = require("cors")
@@ -18,40 +20,27 @@ app.use(cors(corsOptions))
 
 
 app.post("/signup", async (req, res) => {
-    const {
-        firstName,
-        lastName,
-        emailID,
-        password
-    } = req.body
+    
+    
     try {
+        const {firstName, lastName, emailID, password} = req.body
 
-        if (!firstName || firstName.length > 25) {
-            return res.status(400).json({ message: "First Name is required and must be less than 25 characters." })
-        }
+        signUpValidation(req)
 
-        if (!lastName && lastName.length > 25) {
-            return res.status(400).json({ message: "Last Name is required and must  be less than 25 characters." })
-        }
-
-        if(emailID && !validator.isEmail(emailID)){
-            return res.status(400).json({message: "Enter valid email ID.", emailID})
-        }
-
-        if(password && !validator.isStrongPassword(password)){
-            return res.status(400).json({message: "Enter strong password.", password})
-        }
-
-
+        const passwordHash = await bcrypt.hash(password, 10)
+        console.log(passwordHash)
         // create a new instance of user model
-        const user = new User({ firstName, lastName, emailID, password })
+        const user = new User({ firstName, lastName, emailID, password:passwordHash })
+
+        
 
         const saveUser = await user.save()
 
-        res.status(200).json({ message: "User added successfully.", users: saveUser })
+        return res.status(200).json({ message: "User added successfully.", users: saveUser })
 
     } catch (err) {
-        res.status(500).json({ ERROR: err.message })
+        console.error(err)
+       return res.status(500).json({ ERROR: err.message })
     }
 })
 
