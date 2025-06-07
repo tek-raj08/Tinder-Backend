@@ -1,7 +1,7 @@
 const { initializeData } = require("./db/db.connect")
 const validator = require('validator');
-const {signUpValidation} = require("./utils/validationSignUp")
-const  bcrypt = require("bcryptjs");
+const { signUpValidation } = require("./utils/validationSignUp")
+const bcrypt = require("bcryptjs");
 
 const express = require("express")
 const cors = require("cors")
@@ -20,19 +20,19 @@ app.use(cors(corsOptions))
 
 
 app.post("/signup", async (req, res) => {
-    
-    
+
+
     try {
-        const {firstName, lastName, emailID, password} = req.body
+        const { firstName, lastName, emailID, password } = req.body
 
         signUpValidation(req)
 
         const passwordHash = await bcrypt.hash(password, 10)
-        console.log(passwordHash)
+        // console.log(passwordHash)
         // create a new instance of user model
-        const user = new User({ firstName, lastName, emailID, password:passwordHash })
+        const user = new User({ firstName, lastName, emailID, password: passwordHash })
 
-        
+
 
         const saveUser = await user.save()
 
@@ -40,7 +40,34 @@ app.post("/signup", async (req, res) => {
 
     } catch (err) {
         console.error(err)
-       return res.status(500).json({ ERROR: err.message })
+        return res.status(500).json({ ERROR: err.message })
+    }
+})
+
+app.post("/login", async (req, res) => {
+
+    const { emailID, password } = req.body
+    try {
+        const user = await User.findOne({ emailID })
+        // console.log(user)
+        if (!user) {
+            return res.status(404).json({ message: "Invalid Credentials." })
+        }
+
+        const isPasswordValid = bcrypt.compare(password, user?.password)
+
+
+        if (isPasswordValid) {
+            return res.status(201).json({ message: "Login successfull." })
+        } else {
+            return res.status(404).json({ message: "Invalid Credentials." })
+
+        }
+
+
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({ ERROR: "User failed to Login." })
     }
 })
 
@@ -88,7 +115,7 @@ app.post("/users/:userId", async (req, res) => {
         }
 
         if (photoUrl && !validator.isURL(photoUrl)) {
-            return res.status(400).json({message: "Enter valid Photo URL.", photoUrl})
+            return res.status(400).json({ message: "Enter valid Photo URL.", photoUrl })
         }
 
 
