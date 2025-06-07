@@ -1,4 +1,5 @@
 const { initializeData } = require("./db/db.connect")
+const validator = require('validator');
 
 const express = require("express")
 const cors = require("cors")
@@ -24,8 +25,26 @@ app.post("/signup", async (req, res) => {
         password
     } = req.body
     try {
+
+        if (!firstName || firstName.length > 25) {
+            return res.status(400).json({ message: "First Name is required and must be less than 25 characters." })
+        }
+
+        if (!lastName && lastName.length > 25) {
+            return res.status(400).json({ message: "Last Name is required and must  be less than 25 characters." })
+        }
+
+        if(emailID && !validator.isEmail(emailID)){
+            return res.status(400).json({message: "Enter valid email ID.", emailID})
+        }
+
+        if(password && !validator.isStrongPassword(password)){
+            return res.status(400).json({message: "Enter strong password.", password})
+        }
+
+
         // create a new instance of user model
-        const user = new User({firstName, lastName, emailID, password})
+        const user = new User({ firstName, lastName, emailID, password })
 
         const saveUser = await user.save()
 
@@ -36,44 +55,70 @@ app.post("/signup", async (req, res) => {
     }
 })
 
-app.get("/feed", async(req, res) => {
+app.get("/feed", async (req, res) => {
 
-    try{
-        
+    try {
+
         const allUser = await User.find()
-        if(allUser.length === 0){
-            res.status(404).json({message: "Users not found"})
-        }else{
+        if (allUser.length === 0) {
+            res.status(404).json({ message: "Users not found" })
+        } else {
 
-            res.status(201).json({message: "All user retrieve successfully.", users: allUser})
+            res.status(201).json({ message: "All user retrieve successfully.", users: allUser })
         }
 
-    }catch(err){
-        res.status(500).json({ERROR: err.message})
+    } catch (err) {
+        res.status(500).json({ ERROR: err.message })
     }
 })
 
-app.delete("/users", async(req, res) => {
+app.delete("/users", async (req, res) => {
     const userId = req.body.userId
-    try{
+    try {
         const users = await User.findByIdAndDelete(userId)
-        res.status(200).json({message: "User deleted successfully.", users})
+        res.status(200).json({ message: "User deleted successfully.", users })
 
-    }catch(err){
-        res.status(500).json({ERROR: "Failed to delete user."})
+    } catch (err) {
+        res.status(500).json({ ERROR: "Failed to delete user." })
     }
 })
 
-app.post("/users", async(req, res) => {
+app.post("/users/:userId", async (req, res) => {
+    try {
+        const user_Id = req.params?.userId.trim()
+        // console.log(user_Id)
 
-    const userId = req.body.userId
-    const {firstName, lastName, emailID, password, skills, age, gender, photoUrl, about} = req.body
-    try{
-        const updateUser = await User.findByIdAndUpdate(userId, {firstName, lastName, emailID, password, skills, age, gender, photoUrl, about}, {returnDocument: "after"})
-        res.status(201).json({message: "User updated successfully.", users: updateUser})
+        const { skills, age, gender, photoUrl, about } = req.body
 
-    }catch(err){
-        res.status(500).json({ERROR: "Failed to User update."})
+        if (skills && (!Array.isArray(skills) || skills.length > 4)) {
+            return res.status(400).json({ message: "User does not add more than 4 skills." })
+        }
+
+        if (age && (isNaN(age) || age < 18)) {
+            return res.status(400).json({ message: "Age should be more than 18." })
+        }
+
+        if (photoUrl && !validator.isURL(photoUrl)) {
+            return res.status(400).json({message: "Enter valid Photo URL.", photoUrl})
+        }
+
+
+        const ALLOWED_UPDATES = ["skills", "gender", "photoUrl", "about", "age"]
+
+        const isUpdateAllowed = Object.keys(req.body).every((k) => ALLOWED_UPDATES.includes(k))
+
+        if (!isUpdateAllowed) {
+            return res.status(400).json({ message: "Failed to updated the user's data" })
+        }
+
+
+        const updateUser = await User.findByIdAndUpdate(user_Id, { skills, age, gender, photoUrl, about }, { new: true })
+        res.status(201).json({ message: "User updated successfully.", users: updateUser })
+
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ ERROR: "Failed to User update." })
     }
 })
 
