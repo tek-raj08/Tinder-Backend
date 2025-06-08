@@ -24,4 +24,20 @@ const signUpValidation = (req) => {
 
 }
 
-module.exports = {signUpValidation}
+const validateProfileData = (req) => {
+
+    const allowededFields = ["firstName", "lastName", "photoUrl", "gender", "age", "about", "skills"]
+
+    const isAllAllowedFields  = Object.keys(req.body).every((field) => allowededFields.includes(field))
+
+    return isAllAllowedFields
+}
+
+const validatePassword = (req) => {
+    const allowededFields = ["password"]
+
+    const isAllAllowedFields = Object.keys(req.body).every((k) => allowededFields.includes(k))
+    return isAllAllowedFields
+}
+
+module.exports = {signUpValidation, validateProfileData, validatePassword}

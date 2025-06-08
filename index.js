@@ -1,6 +1,6 @@
 const { initializeData } = require("./db/db.connect")
 const validator = require('validator');
-const { signUpValidation } = require("./utils/validationSignUp")
+const { signUpValidation } = require("./utils/validation")
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser")
 const jwt = require("jsonwebtoken")

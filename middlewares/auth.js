@@ -8,7 +8,7 @@ const userAuth = async(req, res, next) => {
 
         const {token} = req.cookies
         if(!token){
-            return res.status("404").json({message: "Token is not found."})
+            return res.status(404).json({message: "Token is not found."})
         }
     
         const decodedToken = jwt.verify(token, SECRET_KEY)
@@ -17,7 +17,7 @@ const userAuth = async(req, res, next) => {
         const user = await User.findById({_id})
     
         if(!user){
-            return res.status(400).json({message: "User not found."})
+            return res.status(404).json({message: "User not found."})
         }
 
         req.user = user
