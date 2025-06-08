@@ -9,6 +9,7 @@ const SECRET_KEY = process.env.SECRET_KEY
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
+        index: true,
         maxLength: 50,
         required: true,
     },
@@ -47,7 +48,10 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ["Male", "Female", "Others"]
+        enum:{
+            values:["Male", "Female", "Others"],
+            message: `{VALUE} is incorrect gender.`
+        } 
 
     },
     photoUrl: {
