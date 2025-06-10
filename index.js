@@ -13,7 +13,7 @@ const User = require("./models/user");
 
 
 const corsOptions = {
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true,
     status: 200
 }
