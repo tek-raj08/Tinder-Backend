@@ -58,6 +58,9 @@ userRouter.get("/feed", userAuth, async(req, res) => {
 
     try{
         const loggedInUser = req.user;
+        const page = parseInt(req.query.page) || 1
+        let limit = parseInt(req.query.limit) || 10
+        const skip = (page - 1)*limit
 
         const connectionRequest = await Connection.find({
             $or: [
@@ -76,7 +79,7 @@ userRouter.get("/feed", userAuth, async(req, res) => {
 
         const users = await User.find({
            $and:[ {_id: {$nin: Array.from(hideUserFromFeed)}}, {_id: {$ne: loggedInUser._id}}]
-        }).select(populate_data)
+        }).select(populate_data).skip(skip).limit(limit)
 
         return res.status(201).json({message: "Retrieve all feed.", users})
 
