@@ -6,7 +6,7 @@ const userAuth = async(req, res, next) => {
 
     try{
 
-        const {token} = req.cookies?.token || (req.headers['authorization']?.split(" ")[1])
+        const {token} = req.cookies?.token || req.headers['authorization']
         if(!token){
             return res.status(404).json({message: "Token is not found."})
         }
