@@ -56,7 +56,7 @@ authRouter.post("/login", async (req, res) => {
                 sameSite: "None",
 
             }, {expires: new Date(Date.now() + 24 * 3600000)})
-            
+
             return res.status(201).json({ message: "Login successfull.", user })
         } else {
             return res.status(404).json({ message: "Invalid Credentials." })

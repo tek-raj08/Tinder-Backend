@@ -20,6 +20,12 @@ app.use(
     credentials: true
 }))
 
+// app.use(
+//     cors({
+//     origin: "https://tinder-frontend-feqr.vercel.app",
+//     credentials: true
+// }))
+
 const SECRET_KEY = process.env.SECRET_KEY
 
 app.use(express.json()) // middle aware read json data
