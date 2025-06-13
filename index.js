@@ -12,18 +12,18 @@ const cors = require("cors")
 const User = require("./models/user");
 
 
-const corsOptions = {
-    origin: "http://localhost:5173",
-    credentials: true,
-    status: 200
-}
-
 const app = express()
+
+app.use(
+    cors({
+    origin: "http://localhost:5174",
+    credentials: true
+}))
 
 const SECRET_KEY = process.env.SECRET_KEY
 
 app.use(express.json()) // middle aware read json data
-app.use(cors(corsOptions))
+
 app.use(cookieParser())
 
 const {authRouter}  = require("./Routes/auth")
