@@ -34,7 +34,7 @@ const allowedOrgins = ["https://tinder-frontend-psi.vercel.app", "http://localho
 app.use(cors({
     origin: function (origin, callback){
         if(!origin || allowedOrgins.includes(origin)){
-            return  (callback(null, true))
+            return callback(null, true)
         }else{
             return callback(new Error("Origin are not allowed by CORS."))
         }
