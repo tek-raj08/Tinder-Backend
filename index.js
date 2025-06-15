@@ -26,7 +26,7 @@ const app = express()
 //     credentials: true
 // }))
 
-const allowedOrgins = ["https://tinder-frontend-feqr.vercel.app", "http://localhost:5173"]
+const allowedOrgins = ["https://tinder-frontend-psi.vercel.app/", "http://localhost:5173"]
 
 app.use(cors({
     oring: function (origin, callback){
