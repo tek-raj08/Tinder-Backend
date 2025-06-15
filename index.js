@@ -13,6 +13,9 @@ const User = require("./models/user");
 
 
 const app = express()
+app.use(express.json()) // middle aware read json data
+
+app.use(cookieParser())
 
 // app.use(
 //     cors({
@@ -42,9 +45,7 @@ app.use(cors({
 
 const SECRET_KEY = process.env.SECRET_KEY
 
-app.use(express.json()) // middle aware read json data
 
-app.use(cookieParser())
 
 const {authRouter}  = require("./Routes/auth")
 const {profileRouter}  = require("./Routes/profile")
