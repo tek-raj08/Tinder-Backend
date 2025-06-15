@@ -14,17 +14,29 @@ const User = require("./models/user");
 
 const app = express()
 
-app.use(
-    cors({
-    origin: "http://localhost:5173",
-    credentials: true
-}))
+// app.use(
+//     cors({
+//     origin: "http://localhost:5173",
+//     credentials: true
+// }))
 
 // app.use(
 //     cors({
 //     origin: "https://tinder-frontend-feqr.vercel.app",
 //     credentials: true
 // }))
+
+const allowedOrgins = ["https://tinder-frontend-feqr.vercel.app", "http://localhost:5173"]
+
+app.use(cors({
+    oring: function (origin, callback){
+        if(!origin || allowedOrgins.includes(origin)){
+            return  (callback(null, true))
+        }else{
+            return callback(new Error("Origin are not allowed by CORS."))
+        }
+    }
+}))
 
 const SECRET_KEY = process.env.SECRET_KEY
 

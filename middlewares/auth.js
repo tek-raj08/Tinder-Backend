@@ -8,7 +8,7 @@ const userAuth = async(req, res, next) => {
 
         const token = req.cookies?.token || (req.headers['authorization']?.split(" ")[1])
         if(!token){
-            return res.status(401).json({message: "Token is not found, Please Login."})
+            return res.status(401).json({message: "Token not found, Please Login."})
         }
     
         const decodedToken = jwt.verify(token, SECRET_KEY)
