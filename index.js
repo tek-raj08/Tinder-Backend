@@ -26,16 +26,18 @@ const app = express()
 //     credentials: true
 // }))
 
-const allowedOrgins = ["https://tinder-frontend-psi.vercel.app/", "http://localhost:5173"]
+const allowedOrgins = ["https://tinder-frontend-psi.vercel.app", "http://localhost:5173"]
 
 app.use(cors({
-    oring: function (origin, callback){
+    origin: function (origin, callback){
         if(!origin || allowedOrgins.includes(origin)){
             return  (callback(null, true))
         }else{
             return callback(new Error("Origin are not allowed by CORS."))
         }
-    }
+    },
+
+    credentials: true
 }))
 
 const SECRET_KEY = process.env.SECRET_KEY
