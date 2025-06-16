@@ -5,7 +5,7 @@ const User = require("../models/user");
 
 const userRouter = express.Router();
 
-const populate_data = ["firstName", "lastName", "photoUrl", "gender", "about", "skills"]
+const populate_data = ["firstName", "lastName", "photoUrl", "gender", "about", "skills", "age"]
 
 userRouter.get("/user/requests", userAuth, async(req, res) => {
 

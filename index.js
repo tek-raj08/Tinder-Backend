@@ -17,18 +17,6 @@ app.use(express.json()) // middle aware read json data
 
 app.use(cookieParser())
 
-// app.use(
-//     cors({
-//     origin: "http://localhost:5173",
-//     credentials: true
-// }))
-
-// app.use(
-//     cors({
-//     origin: "https://tinder-frontend-feqr.vercel.app",
-//     credentials: true
-// }))
-
 const allowedOrgins = ["https://tinder-frontend-cyan.vercel.app", "http://localhost:5173"]
 
 app.use(cors({
