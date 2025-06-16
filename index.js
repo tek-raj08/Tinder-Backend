@@ -29,7 +29,7 @@ app.use(cookieParser())
 //     credentials: true
 // }))
 
-const allowedOrgins = ["https://tinder-frontend-psi.vercel.app", "http://localhost:5173"]
+const allowedOrgins = ["https://tinder-frontend-cyan.vercel.app", "http://localhost:5173"]
 
 app.use(cors({
     origin: function (origin, callback){
