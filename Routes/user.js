@@ -19,7 +19,7 @@ userRouter.get("/user/requests", userAuth, async(req, res) => {
         const connectionRequest = await Connection.find({
             toUserId: loggedInUser._id,
             status: "interested"
-        }).populate("fromUserId", ["firstName", "lastName"])
+        }).populate("fromUserId", populate_data)
 
         res.status(200).json({message: "Retrieve all the connection request.", connectionRequest})
 
