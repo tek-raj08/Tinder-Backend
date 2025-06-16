@@ -2,7 +2,9 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const Connection = require("../models/connection");
 const User = require("../models/user");
-const { Types } = require("mongoose");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 
 const userRouter = express.Router();
 
@@ -79,7 +81,11 @@ userRouter.get("/feed", userAuth, async(req, res) => {
         
 
         const users = await User.find({
-           $and:[ {_id: {$nin: Array.from(hideUserFromFeed).map(id => Types.ObjectId(id))}}, {_id: {$ne: Types.ObjectId(loggedInUser._id)}}]
+           $and:[ 
+            {_id: {$nin: Array.from(hideUserFromFeed).map((id) => new ObjectId(id))}}, 
+            {_id: {$ne: new ObjectId(loggedInUser._id)}}
+        ]
+
         }).select(populate_data).skip(skip).limit(limit)
 
         return res.status(201).json({message: "Retrieve all feed.", users})
