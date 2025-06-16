@@ -2,14 +2,15 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const Connection = require("../models/connection");
 const User = require("../models/user");
+const { Types } = require("mongoose");
 
 const userRouter = express.Router();
 
 const populate_data = ["firstName", "lastName", "photoUrl", "gender", "about", "skills", "age"]
 
-userRouter.get("/user/requests", userAuth, async (req, res) => {
+userRouter.get("/user/requests", userAuth, async(req, res) => {
 
-    try {
+    try{
 
         const loggedInUser = req.user;
 
@@ -18,54 +19,54 @@ userRouter.get("/user/requests", userAuth, async (req, res) => {
             status: "interested"
         }).populate("fromUserId", ["firstName", "lastName"])
 
-        res.status(200).json({ message: "Retrieve all the connection request.", connectionRequest })
+        res.status(200).json({message: "Retrieve all the connection request.", connectionRequest})
 
-    } catch (err) {
+    }catch(err){
         console.error(err)
-        return res.status(500).json({ ERROR: err.message })
+        return res.status(500).json({ERROR: err.message})
     }
 })
 
-userRouter.get("/user/connections", userAuth, async (req, res) => {
+userRouter.get("/user/connections", userAuth, async(req, res) => {
 
-    try {
+    try{
         const loggedInUser = req.user;
 
-        const connectionRequest = await Connection.find({
+        const connectionRequest  = await Connection.find({
             $or: [
-                { toUserId: loggedInUser._id, status: "accepted" },
-                { fromUserId: loggedInUser._id, status: "accepted" }
+                {toUserId: loggedInUser._id, status: "accepted"},
+                {fromUserId: loggedInUser._id, status: "accepted"}
             ]
         }).populate("fromUserId", populate_data).populate("toUserId", populate_data)
 
         const data = connectionRequest.map((row) => {
-            if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
+            if(row.fromUserId._id.toString() === loggedInUser._id.toString()){
                 return row.toUserId
             }
 
             return row.fromUserId
         })
 
-        return res.status(200).json({ message: "Retrieve all connections.", data })
+        return res.status(200).json({message: "Retrieve all connections.", data})
 
-    } catch (err) {
+    }catch(err){
         console.error(err)
-        return res.status(500).json({ ERROR: err.message })
+        return res.status(500).json({ERROR: err.message})
     }
 })
 
-userRouter.get("/feed", userAuth, async (req, res) => {
+userRouter.get("/feed", userAuth, async(req, res) => {
 
-    try {
+    try{
         const loggedInUser = req.user;
         const page = parseInt(req.query.page) || 1
         let limit = parseInt(req.query.limit) || 10
-        const skip = (page - 1) * limit
+        const skip = (page - 1)*limit
 
         const connectionRequest = await Connection.find({
             $or: [
-                { fromUserId: loggedInUser._id },
-                { toUserId: loggedInUser._id }
+                {fromUserId: loggedInUser._id},
+                {toUserId: loggedInUser._id}
             ]
         }).select("fromUserId toUserId")
 
@@ -75,19 +76,18 @@ userRouter.get("/feed", userAuth, async (req, res) => {
             hideUserFromFeed.add(req.fromUserId.toString());
             hideUserFromFeed.add(req.toUserId.toString())
         })
-
-        hideUserFromFeed.add(loggedInUser._id.toString())
+        
 
         const users = await User.find({
-            _id: { $nin: Array.from(hideUserFromFeed.map((id) => Types.ObjectId(id))) }
+           $and:[ {_id: {$nin: Array.from(hideUserFromFeed).map(id => Types.ObjectId(id))}}, {_id: {$ne: Types.ObjectId(loggedInUser._id)}}]
         }).select(populate_data).skip(skip).limit(limit)
 
-        return res.status(201).json({ message: "Retrieve all feed.", users })
+        return res.status(201).json({message: "Retrieve all feed.", users})
 
-    } catch (err) {
+    }catch(err){
         console.error(err)
-        return res.status(500).json({ ERROR: err.message })
+        return res.status(500).json({ERROR: err.message})
     }
 })
 
-module.exports = { userRouter }
+module.exports = {userRouter}
