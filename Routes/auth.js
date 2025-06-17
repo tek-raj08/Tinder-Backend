@@ -20,11 +20,24 @@ authRouter.post("/signup", async (req, res) => {
         // create a new instance of user model
         const user = new User({ firstName, lastName, emailID, password: passwordHash })
 
+        if(user){
 
+            const saveUser = await user.save()
+            const token = await user.getJWT()
+    
+                res.cookie("token", token, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "None",
+                    expires: new Date(Date.now() + 24 * 3600000)
+    
+                })
+            return res.status(200).json({ message: "User added successfully.", user: saveUser })
+        }else{
+            return res.status(404).json({ message: "Invalid Credentials." })
 
-        const saveUser = await user.save()
+        }
 
-        return res.status(200).json({ message: "User added successfully.", users: saveUser })
 
     } catch (err) {
         console.error(err)
